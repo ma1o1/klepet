@@ -1,7 +1,8 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
+  jeSmesko = jeSmesko || sporocilo.indexOf('<iframe src=') > -1;
   if (jeSmesko) {
-    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
+    //sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
@@ -14,6 +15,7 @@ function divElementHtmlTekst(sporocilo) {
 
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
+  sporocilo = filterVideo(sporocilo);
   sporocilo = dodajSmeske(sporocilo);
   var sistemskoSporocilo;
 
@@ -131,3 +133,37 @@ function dodajSmeske(vhodnoBesedilo) {
   }
   return vhodnoBesedilo;
 }
+
+ function filterVideo(vhodnoBesedilo) {
+    var pattern = new RegExp(/https:\/\/www\.youtube\.com\/watch\?v=[^" ]*/,'gi');
+    var slika = vhodnoBesedilo.match(pattern,vhodnoBesedilo);
+  
+     for(var j in slika){
+        for(var smesko in slika){
+          if(smesko!=j && slika[smesko]==slika[j]){
+            slika[smesko] = "0";
+          }
+        }
+      }
+   
+    for (var smesko in slika) {
+      
+        //dodajati več kot en isti filmčk naekrat je nesmiselno (slike že še grejo)
+        
+       
+        if(slika[smesko] == "0"){
+          continue;
+        }
+        
+        var oblika= "<br> <iframe src='" + slika[smesko].replace("https://www.youtube.com/watch?v=","https://www.youtube.com/embed/") + "' width='200px' height='150px' style='margin-left:20px' allowfullscreen></iframe> <br> ";
+        console.log(oblika);
+        console.log(slika[smesko]);
+        
+        vhodnoBesedilo = vhodnoBesedilo.replace(slika[smesko],oblika)
+        
+     }
+    vhodnoBesedilo = vhodnoBesedilo.replace(pattern,"");
+    
+    console.log(vhodnoBesedilo);
+    return vhodnoBesedilo;
+  }
