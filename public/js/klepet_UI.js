@@ -1,7 +1,14 @@
 function divElementEnostavniTekst(sporocilo) {
-  var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
+  
+   var pattern = new RegExp(".*https?://(?:[a-z0-9\-]+\.)+[a-z]{2,6}(?:/[^/#?]+)+\.(?:jpg|gif|png).*",'gi'); // fragment locater
+   var slika = sporocilo.search(pattern,sporocilo);
+   var jeSmesko = slika != -1;
+   
+  // console.log(slika);
   if (jeSmesko) {
-    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
+    console.log(sporocilo);
+   // sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
+  //  console.log(sporocilo);
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
@@ -14,9 +21,11 @@ function divElementHtmlTekst(sporocilo) {
 
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
+  sporocilo = filterSlike(sporocilo);
   sporocilo = dodajSmeske(sporocilo);
+  console.log(sporocilo);
   var sistemskoSporocilo;
-
+  console.log(sporocilo);
   if (sporocilo.charAt(0) == '/') {
     sistemskoSporocilo = klepetApp.procesirajUkaz(sporocilo);
     if (sistemskoSporocilo) {
@@ -136,5 +145,38 @@ function dodajSmeske(vhodnoBesedilo) {
       "<img src='http://sandbox.lavbic.net/teaching/OIS/gradivo/" +
       preslikovalnaTabela[smesko] + "' />");
   }
+  return vhodnoBesedilo;
+}
+
+
+function filterSlike(vhodnoBesedilo) {
+  //console.log(vhodnoBesedilo);
+   
+   // Sem slišal da se da naresti v dveh vrsticah.. bom pustil tole zmedo zaradi avtorskega šarma
+   
+   var pattern = new RegExp('https?://(?:[a-z0-9\-]+\.)+[a-z]{2,6}(?:/[^/#?]+)+\.(?:jpg|gif|png)','gi'); // fragment locater
+   var slika = vhodnoBesedilo.match(pattern,vhodnoBesedilo);
+  ;
+    for(var j in slika){
+      for(var smesko in slika){
+      if(smesko!=j && slika[smesko]==slika[j]){
+        slika[smesko] = "0";
+      }
+      }
+    }
+  
+  
+  for (var smesko in slika) {
+      
+      if(slika[smesko] == "0"){
+        continue;
+      }
+      
+      vhodnoBesedilo = vhodnoBesedilo.replace(new RegExp(slika[smesko],"gi"), " <br> <img src='" + slika[smesko] + "' width='200px' style='margin-left:20px' /> <br> ");
+     
+     
+   }
+  
+  
   return vhodnoBesedilo;
 }
