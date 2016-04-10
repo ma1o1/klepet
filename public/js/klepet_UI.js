@@ -143,15 +143,14 @@ function dodajSmeske(vhodnoBesedilo) {
 
 
 function filterSlike(vhodnoBesedilo) {
-  console.log(vhodnoBesedilo);
-  //
+  //console.log(vhodnoBesedilo);
+   
+   // Sem slišal da se da naresti v dveh vrsticah.. bom pustil tole zmedo zaradi avtorskega šarma
+   
    var pattern = new RegExp('https?://(?:[a-z0-9\-]+\.)+[a-z]{2,6}(?:/[^/#?]+)+\.(?:jpg|gif|png)','gi'); // fragment locater
-//vhodnoBesedilo = vhodnoBesedilo.replace()  
- 
-  //  vhodnoBesedilo = vhodnoBesedilo.replace(pattern, $1);
    var slika = vhodnoBesedilo.match(pattern,vhodnoBesedilo);
   ;
-    for(var j = 0; j< slika.length;j++){
+    for(var j in slika){
       for(var smesko in slika){
       if(smesko!=j && slika[smesko]==slika[j]){
         slika[smesko] = "0";
@@ -159,8 +158,9 @@ function filterSlike(vhodnoBesedilo) {
       }
     }
   
+  
   for (var smesko in slika) {
-    
+      
       if(slika[smesko] == "0"){
         continue;
       }
@@ -169,7 +169,7 @@ function filterSlike(vhodnoBesedilo) {
      
      
    }
- 
+  
   
   return vhodnoBesedilo;
 }
