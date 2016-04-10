@@ -91,6 +91,15 @@ $(document).ready(function() {
     var novElement = divElementEnostavniTekst(sporocilo.besedilo);
     $('#sporocila').append(novElement);
   });
+  socket.on('dregljajPrejem', function () {
+      console.log("dregljaj")
+      $('#vsebina').jrumble();
+      $('#vsebina').trigger('startRumble');
+      setTimeout(konec,1500);
+  });
+  function konec (){
+      $('#vsebina').trigger('stopRumble');
+  }
   
   socket.on('kanali', function(kanali) {
     $('#seznam-kanalov').empty();
